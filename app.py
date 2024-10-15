@@ -1,7 +1,11 @@
 from flask import Flask, request, render_template
 from helper import validate_recaptcha, get_request_data, create_error_response
+from dotenv import load_dotenv
 
+
+load_dotenv()
 app = Flask(__name__)
+
 
 @app.route("/contact", methods=("GET", "POST"))
 def contact():
@@ -13,10 +17,9 @@ def contact():
         # Validate the rest of the data
         pass
     else:
-        return create_error_response(title="UnauthorizedError", detail="Incorrect captcha") 
-    
-
-
+        return create_error_response(
+            title="UnauthorizedError", detail="Incorrect captcha"
+        )
 
 
 if __name__ == "__main__":
