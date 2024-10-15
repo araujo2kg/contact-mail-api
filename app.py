@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, render_template
 from helper import validate_recaptcha, get_request_data, create_error_response
 
 app = Flask(__name__)
@@ -13,7 +13,7 @@ def contact():
         # Validate the rest of the data
         pass
     else:
-        return create_error_response() 
+        return create_error_response(title="UnauthorizedError", detail="Incorrect captcha") 
     
 
 
