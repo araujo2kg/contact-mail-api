@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template
 from helper import validate_recaptcha, get_request_data, create_error_response
 from dotenv import load_dotenv
+from email_validator import validate_email, EmailNotValidError
 
 
 load_dotenv()
@@ -14,11 +15,34 @@ def contact():
 
     data = get_request_data(request)
     if validate_recaptcha(data.get("g-recaptcha-response")):
-        # Validate the rest of the data
-        pass
+
+        # Check name
+        name = data.get("name")
+        if not name:
+            return (
+                create_error_response(title="BadRequestError", detail="Empty name"),
+                400,
+            )
+
+        # Check email
+        try:
+            email = validate_email(data.get("email"), check_deliverability=True)
+        except EmailNotValidError as error:
+            return (
+                create_error_response(
+                    title="BadRequestError", detail=f"Invalid email: {str(error)}"
+                ),
+                400,
+            )
+
+        # Send email
+        return "", 201
     else:
-        return create_error_response(
-            title="UnauthorizedError", detail="Incorrect captcha"
+        return (
+            create_error_response(
+                title="UnauthorizedError", detail="Incorrect captcha"
+            ),
+            401,
         )
 
 
