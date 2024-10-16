@@ -1,6 +1,12 @@
 from flask import Flask, request, render_template
-from helper import validate_recaptcha, get_request_data, create_error_response
+from helper import (
+    validate_recaptcha,
+    get_request_data,
+    create_error_response,
+    send_email,
+)
 from dotenv import load_dotenv
+import os
 from email_validator import validate_email, EmailNotValidError
 
 
@@ -36,6 +42,13 @@ def contact():
             )
 
         # Send email
+        try:
+            send_email(
+                os.getenv("MAIL_AUTH_USER"), email.normalized, name, data.get("comment")
+            )
+        except Exception:
+            return create_error_response(), 500
+
         return "", 201
     else:
         return (
